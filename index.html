@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#06111f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Yönetim">
+<meta name="application-name" content="Yönetim Paneli">
+<title>Yönetim Paneli</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./logo.png">
+<link rel="icon" type="image/png" href="./logo.png">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#06111f;--bg2:#0a1a30;--card:#0f2138;--card2:#142a44;--border:#1e3a5c;
+  --text:#e8f0fb;--muted:#7d94b3;
+  --accent:#3b82f6;--accent2:#2563eb;
+  --cyan:#22d3ee;--blue:#60a5fa;--deep:#0a4dff;
+  --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--gold:#fbbf24;
+  --r:16px;
+}
+html,body{margin:0;padding:0;height:100%}
+body{
+  background:
+    radial-gradient(900px 500px at 50% -5%, #103057 0%, transparent 60%),
+    radial-gradient(700px 400px at 100% 100%, #0a2540 0%, transparent 55%),
+    var(--bg) fixed;
+  color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  font-size:15px;line-height:1.5;overscroll-behavior-y:none;
+}
+.hidden{display:none!important}
+button,input,textarea,select{font-family:inherit;font-size:15px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#1e3a5c;border-radius:9px}
+
+/* ---------- AUTH ---------- */
+#auth-screen{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:22px}
+.auth-box{width:100%;max-width:400px;background:linear-gradient(180deg,#0f2138,#0b1a2e);
+  border:1px solid var(--border);border-radius:24px;padding:26px 22px;
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(59,130,246,.06),
+             inset 0 1px 0 rgba(96,165,250,.08)}
+.logo-img{
+  width:96px;height:96px;border-radius:24px;margin:0 auto 14px;display:block;
+  object-fit:cover;
+  box-shadow:0 12px 32px rgba(10,77,255,.45),0 0 0 1px rgba(96,165,250,.2);
+  background:#050b14;
+}
+.auth-box h1{text-align:center;margin:0 0 4px;font-size:22px;letter-spacing:-.3px;
+  background:linear-gradient(180deg,#fff,#b8c9e3);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-fill-color:transparent;font-weight:900}
+.auth-box p.sub{text-align:center;margin:0 0 20px;color:var(--muted);font-size:13px}
+.tabs{display:flex;background:var(--bg2);border-radius:12px;padding:4px;margin-bottom:18px;
+  border:1px solid rgba(59,130,246,.1)}
+.tabs button{flex:1;background:none;border:0;color:var(--muted);padding:10px;border-radius:9px;
+  font-weight:600;cursor:pointer;transition:.18s}
+.tabs button.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+  box-shadow:0 4px 14px rgba(37,99,235,.5)}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:.3px}
+.field input,.field textarea,.field select{
+  width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);
+  padding:13px 14px;border-radius:12px;outline:none;transition:.18s}
+.field input:focus,.field textarea:focus,.field select:focus{
+  border-color:var(--accent);background:#0d1f36;
+  box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.field textarea{resize:vertical;min-height:90px}
+.field select{cursor:pointer;-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237d94b3' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+.btn{width:100%;padding:14px;border:0;border-radius:12px;font-weight:700;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;transition:.18s;
+  box-shadow:0 8px 22px rgba(37,99,235,.4)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--card2);box-shadow:none;color:var(--text);border:1px solid var(--border)}
+.btn.danger{background:linear-gradient(135deg,#dc2626,#ef4444);box-shadow:0 8px 22px rgba(239,68,68,.3)}
+.btn.success{background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 8px 22px rgba(34,197,94,.3)}
+.btn.gold{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#1a1205;
+  box-shadow:0 8px 22px rgba(251,191,36,.4)}
+.btn.sm{padding:9px 13px;font-size:13px;width:auto;border-radius:10px}
+.hint{font-size:11.5px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.6}
+
+/* ---------- APP ---------- */
+#main-screen{min-height:100dvh;display:flex;flex-direction:column;padding-bottom:calc(74px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:40;
+  background:rgba(6,17,31,.88);backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid rgba(59,130,246,.15);
+  padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top));
+  display:flex;align-items:center;gap:11px}
+header .logo-img{
+  width:38px;height:38px;margin:0;border-radius:11px;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(10,77,255,.35),0 0 0 1px rgba(96,165,250,.2)}
+header .brand{font-weight:800;font-size:16px;letter-spacing:-.2px;flex:1;
+  background:linear-gradient(180deg,#fff,#c8d6ec);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-fill-color:transparent}
+header .brand small{display:block;font-weight:500;font-size:10.5px;color:var(--muted);
+  letter-spacing:.4px;-webkit-text-fill-color:var(--muted)}
+.avatar{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:19px;flex-shrink:0;border:1px solid rgba(96,165,250,.2)}
+main{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+.card{background:linear-gradient(180deg,#0f2138,#0c1c31);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px;margin-bottom:14px;
+  box-shadow:0 8px 24px rgba(0,0,0,.2),inset 0 1px 0 rgba(96,165,250,.05)}
+.card h3{margin:0 0 12px;font-size:14px;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+.card h3 .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 10px var(--accent)}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+
+/* ---------- ROZETLER ---------- */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;
+  font-size:11px;font-weight:700;letter-spacing:.2px;border:1px solid transparent;white-space:nowrap;
+  line-height:1.4;transition:.15s}
+.b-Kurucu{
+  background:linear-gradient(135deg,rgba(251,191,36,.24),rgba(217,119,6,.12));
+  color:#fcd34d;border-color:rgba(251,191,36,.55);
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:10px;
+  text-shadow:0 0 8px rgba(251,191,36,.55);
+  box-shadow:0 0 12px rgba(251,191,36,.18),inset 0 1px 0 rgba(255,255,255,.12);
+}
+.b-Developer{
+  background:rgba(34,211,238,.14);color:#22d3ee;border-color:rgba(34,211,238,.45);
+  font-family:ui-monospace,'SF Mono',Consolas,'Courier New',monospace;
+  font-weight:700;letter-spacing:0;font-size:11px;
+  box-shadow:0 0 10px rgba(34,211,238,.15);
+}
+.b-Developer::before{content:'{';margin-right:2px;font-size:9px;opacity:.55;font-weight:900}
+.b-Developer::after{content:'}';margin-left:2px;font-size:9px;opacity:.55;font-weight:900}
+.b-Admin{
+  background:rgba(239,68,68,.15);color:#f87171;border-color:rgba(239,68,68,.42);
+  font-family:system-ui,-apple-system,sans-serif;
+  font-weight:900;letter-spacing:1.8px;text-transform:uppercase;font-size:10px;
+}
+.b-Mod{
+  background:rgba(34,197,94,.15);color:#4ade80;border-color:rgba(34,197,94,.38);
+  font-family:system-ui,-apple-system,sans-serif;
+  font-weight:600;letter-spacing:.4px;
+}
+.b-ModAdayı{
+  background:rgba(96,165,250,.13);color:#93c5fd;border-color:rgba(96,165,250,.35);
+  font-family:system-ui,-apple-system,sans-serif;
+  font-style:italic;font-weight:500;letter-spacing:.3px;opacity:.95;
+}
+
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--card2);border:1px solid var(--border);border-radius:13px;padding:13px 10px;text-align:center}
+.stat b{display:block;font-size:22px;font-weight:800;letter-spacing:-.5px}
+.stat span{font-size:10.5px;color:var(--muted);letter-spacing:.3px}
+
+.act-row{display:flex;gap:8px;margin-bottom:11px}
+.act-btn{flex:1;padding:12px 6px;border-radius:12px;border:1px solid var(--border);background:var(--bg2);
+  color:var(--muted);font-weight:700;font-size:12.5px;cursor:pointer;transition:.18s}
+.act-btn.on[data-s="Aktif"]{background:rgba(34,197,94,.18);border-color:var(--green);color:#4ade80}
+.act-btn.on[data-s="İzinli"]{background:rgba(245,158,11,.18);border-color:var(--yellow);color:#fbbf24}
+.act-btn.on[data-s="Pasif"]{background:rgba(239,68,68,.18);border-color:var(--red);color:#f87171}
+
+.list-item{display:flex;align-items:center;gap:12px;padding:11px;border-radius:13px;
+  background:linear-gradient(180deg,#142a44,#102339);
+  border:1px solid var(--border);margin-bottom:9px;cursor:pointer;transition:.15s}
+.list-item:active{transform:scale(.985);background:#183258}
+.list-item .info{flex:1;min-width:0}
+.list-item .name{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.list-item .sub{font-size:11.5px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.dot-status{width:9px;height:9px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor}
+.s-Aktif{background:var(--green);color:var(--green)}
+.s-İzinli{background:var(--yellow);color:var(--yellow)}
+.s-Pasif{background:#4b5563;color:#4b5563}
+.s-yok{background:#25344a;color:transparent;box-shadow:none}
+
+.note{background:var(--card2);border:1px solid var(--border);border-left:3px solid var(--accent);
+  border-radius:12px;padding:13px;margin-bottom:10px;
+  box-shadow:inset 3px 0 0 var(--accent2)}
+.note h4{margin:0 0 5px;font-size:14px}
+.note p{margin:0;font-size:13px;color:#c3cbe0;white-space:pre-wrap;word-break:break-word}
+.note .meta{font-size:10.5px;color:var(--muted);margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+
+.heat{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-top:6px}
+.heat div{aspect-ratio:1;border-radius:6px;background:#142a44;border:1px solid #1e3a5c}
+.heat div.h1{background:rgba(34,197,94,.65);border-color:rgba(34,197,94,.8)}
+.heat div.h2{background:rgba(245,158,11,.65);border-color:rgba(245,158,11,.8)}
+.heat div.h3{background:rgba(107,114,128,.55);border-color:#4b5563}
+.heat div.today{outline:2px solid var(--cyan);outline-offset:1px;box-shadow:0 0 10px rgba(34,211,238,.5)}
+
+nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;
+  background:rgba(6,17,31,.94);backdrop-filter:blur(16px) saturate(140%);
+  border-top:1px solid rgba(59,130,246,.15);
+  padding:7px 5px calc(7px + env(safe-area-inset-bottom))}
+nav.bottom button{flex:1;background:none;border:0;color:var(--muted);padding:7px 2px;border-radius:12px;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;
+  font-weight:600;letter-spacing:.2px;transition:.15s}
+nav.bottom button svg{width:21px;height:21px;stroke-width:2}
+nav.bottom button.on{color:var(--cyan);background:linear-gradient(180deg,rgba(34,211,238,.12),transparent)}
+nav.bottom button.on svg{filter:drop-shadow(0 0 6px rgba(34,211,238,.6))}
+
+/* ---------- YÜKLEME BANNER ---------- */
+#install-banner{
+  position:fixed;left:12px;right:12px;z-index:70;
+  bottom:calc(82px + env(safe-area-inset-bottom));
+  max-width:400px;margin:0 auto;
+  background:linear-gradient(135deg,#0f2138,#0a1a30);
+  border:1px solid rgba(34,211,238,.35);
+  border-radius:16px;padding:13px 14px;
+  box-shadow:0 16px 40px rgba(0,0,0,.6),0 0 24px rgba(34,211,238,.15);
+  display:flex;align-items:center;gap:12px;
+  animation:slideUp .35s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes slideUp{from{transform:translateY(80px);opacity:0}to{transform:none;opacity:1}}
+#install-banner .ib-logo{
+  width:42px;height:42px;border-radius:12px;flex-shrink:0;object-fit:cover;
+  box-shadow:0 4px 14px rgba(10,77,255,.4),0 0 0 1px rgba(96,165,250,.2)
+}
+#install-banner .ib-text{flex:1;min-width:0}
+#install-banner .ib-title{font-weight:800;font-size:14px;letter-spacing:-.2px}
+#install-banner .ib-sub{font-size:11.5px;color:var(--muted);margin-top:1px}
+#install-banner .ib-btn{
+  background:linear-gradient(135deg,var(--accent),var(--cyan));
+  border:0;color:#fff;padding:9px 15px;border-radius:10px;
+  font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(34,211,238,.4)
+}
+#install-banner .ib-close{
+  background:transparent;border:0;color:var(--muted);cursor:pointer;
+  padding:4px;font-size:16px;line-height:1;flex-shrink:0;opacity:.7
+}
+#install-banner .ib-close:hover{opacity:1}
+
+/* ---------- MODAL / TOAST ---------- */
+#modal-root{position:fixed;inset:0;z-index:100;display:none}
+#modal-root.open{display:flex;align-items:flex-end;justify-content:center}
+.backdrop{position:absolute;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px)}
+.sheet{position:relative;width:100%;max-width:560px;max-height:88dvh;overflow-y:auto;
+  background:linear-gradient(180deg,#0f2138,#0a1a30);
+  border:1px solid var(--border);border-bottom:0;
+  border-radius:24px 24px 0 0;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  animation:up .25s cubic-bezier(.2,.9,.3,1);
+  box-shadow:0 -20px 60px rgba(0,0,0,.6),inset 0 1px 0 rgba(96,165,250,.1)}
+@keyframes up{from{transform:translateY(60px);opacity:.4}to{transform:none;opacity:1}}
+.sheet h2{margin:0 0 16px;font-size:17px;display:flex;justify-content:space-between;align-items:center}
+.sheet .close{background:var(--card2);border:1px solid var(--border);color:var(--muted);
+  width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:17px;line-height:1}
+#toast-root{position:fixed;top:calc(14px + env(safe-area-inset-top));left:0;right:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 16px}
+.toast{background:linear-gradient(180deg,#142a44,#0f2138);border:1px solid var(--border);
+  color:var(--text);padding:11px 17px;border-radius:12px;font-size:13px;font-weight:600;
+  box-shadow:0 10px 30px rgba(0,0,0,.55);animation:pop .25s;max-width:100%}
+.toast.err{border-color:rgba(239,68,68,.6);color:#fca5a5}
+.toast.ok{border-color:rgba(34,197,94,.6);color:#86efac}
+.toast.gold{border-color:rgba(251,191,36,.6);color:#fcd34d}
+@keyframes pop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+.empty{text-align:center;color:var(--muted);padding:26px 10px;font-size:13px}
+.row{display:flex;gap:9px}
+.row>*{flex:1}
+
+.ios-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;
+  background:var(--card);padding:12px;border-radius:12px;border:1px solid var(--border)}
+.ios-step .num{width:26px;height:26px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--cyan));
+  color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.ios-step .txt{flex:1;font-size:13.5px;line-height:1.5}
+.ios-step .txt b{color:#fff}
+.ios-share-icon{display:inline-flex;width:20px;height:20px;vertical-align:-4px;margin:0 2px;
+  color:var(--blue);}
+
+/* Güncelleme bildirimi */
+#update-toast{
+  position:fixed;left:12px;right:12px;bottom:calc(82px + env(safe-area-inset-bottom));
+  max-width:400px;margin:0 auto;z-index:75;
+  background:linear-gradient(135deg,#0f2138,#0a1a30);
+  border:1px solid rgba(34,211,238,.4);border-radius:14px;
+  padding:12px 14px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 12px 32px rgba(0,0,0,.5);
+  animation:slideUp .3s cubic-bezier(.2,.9,.3,1)
+}
+#update-toast .txt{flex:1;font-size:13px;font-weight:600}
+#update-toast button{
+  background:linear-gradient(135deg,var(--accent),var(--cyan));
+  border:0;color:#fff;padding:8px 13px;border-radius:9px;font-weight:700;font-size:12.5px;cursor:pointer
+}
+</style>
+</head>
+<body>
+
+<!-- ============ GİRİŞ / KAYIT ============ -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <img src="./logo.png" alt="Yönetim Paneli" class="logo-img"
+         onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div style=\'width:96px;height:96px;border-radius:24px;margin:0 auto 14px;background:linear-gradient(135deg,#3b82f6,#0a4dff);display:flex;align-items:center;justify-content:center;font-size:44px\'>👑</div>')">
+    <h1>Yönetim Paneli</h1>
+    <p class="sub">Ekip yönetimi • Günlük takip • Kişisel notlar</p>
+
+    <div class="tabs">
+      <button id="tab-login" class="on" data-action="authTab" data-t="login">Giriş Yap</button>
+      <button id="tab-register" data-action="authTab" data-t="register">Kayıt Ol</button>
+    </div>
+
+    <div id="form-login">
+      <div class="field"><label>KULLANICI ADI</label><input id="li-user" autocomplete="username" placeholder="kullaniciadi"></div>
+      <div class="field"><label>ŞİFRE</label><input id="li-pass" type="password" autocomplete="current-password" placeholder="••••••"></div>
+      <button class="btn" data-action="login">Giriş Yap</button>
+    </div>
+
+    <div id="form-register" class="hidden">
+      <div class="field"><label>KULLANICI ADI</label><input id="rg-user" autocomplete="username" placeholder="en az 3 karakter"></div>
+      <div class="field"><label>ŞİFRE</label><input id="rg-pass" type="password" autocomplete="new-password" placeholder="en az 4 karakter"></div>
+      <div class="field"><label>ŞİFRE (TEKRAR)</label><input id="rg-pass2" type="password" autocomplete="new-password" placeholder="••••••"></div>
+      <button class="btn" data-action="register">Hesap Oluştur</button>
+    </div>
+
+    <p class="hint">
+      🔒 Tüm veriler <b>sadece bu cihazda</b> saklanır.<br>
+      İlk kayıt olan kişi otomatik <b>Kurucu</b> olur.
+    </p>
+  </div>
+</div>
+
+<!-- ============ ANA UYGULAMA ============ -->
+<div id="main-screen" class="hidden">
+  <header>
+    <img src="./logo.png" alt="" class="logo-img"
+         onerror="this.outerHTML='<div style=\'width:38px;height:38px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,#3b82f6,#0a4dff);display:flex;align-items:center;justify-content:center;font-size:19px\'>👑</div>'">
+    <div class="brand">Yönetim Paneli<small>Ekip Yönetim Sistemi</small></div>
+    <div class="avatar" id="hdr-avatar"></div>
+  </header>
+  <main id="view"></main>
+  <nav class="bottom" id="nav"></nav>
+</div>
+
+<div id="modal-root"><div class="backdrop" data-action="closeModal"></div><div class="sheet" id="sheet"></div></div>
+<div id="toast-root"></div>
+
+<script>
+/* =========================================================
+   YARDIMCILAR
+   ========================================================= */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+const DB = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { toast('Depolama dolu!', 'err'); } }
+};
+
+const K = { users: 'yp_users', session: 'yp_session', act: 'yp_act', notes: 'yp_notes_' };
+
+function hash(str) {
+  let h = 5381; const s = 'yp$' + str;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h) + s.charCodeAt(i);
+  return (h >>> 0).toString(16);
+}
+
+function dstr(d = new Date()) {
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+function prettyDate(ts) {
+  const d = new Date(ts), now = new Date();
+  const diff = Math.floor((now - d) / 86400000);
+  if (diff === 0) return 'Bugün ' + d.toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
+  if (diff === 1) return 'Dün ' + d.toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
+  return d.toLocaleDateString('tr-TR', {day:'2-digit',month:'short',year:'numeric'});
+}
+
+const ROLES = {
+  'Kurucu':    { lvl: 5, cls: 'b-Kurucu'    },
+  'Developer': { lvl: 4, cls: 'b-Developer' },
+  'Admin':     { lvl: 3, cls: 'b-Admin'     },
+  'Mod':       { lvl: 2, cls: 'b-Mod'       },
+  'Mod Adayı': { lvl: 1, cls: 'b-ModAdayı'  }
+};
+const ROLE_NAMES = Object.keys(ROLES);
+
+/* ---- Çoklu rol yardımcıları ---- */
+const rolesOf = u => {
+  if (!u) return [];
+  if (Array.isArray(u.roles) && u.roles.length) return u.roles.filter(r => ROLES[r]);
+  if (u.role && ROLES[u.role]) return [u.role];
+  return ['Mod Adayı'];
+};
+const hasRole = (u, r) => rolesOf(u).includes(r);
+const primaryRole = u => {
+  const rs = rolesOf(u).slice().sort((a,b) => ROLES[b].lvl - ROLES[a].lvl);
+  return rs[0] || 'Mod Adayı';
+};
+const rolesBadges = (u, opts = {}) => {
+  const scale = opts.scale || 1;
+  const rs = rolesOf(u).slice().sort((a,b) => ROLES[b].lvl - ROLES[a].lvl);
+  return rs.map(r => `<span class="badge ${ROLES[r].cls}" style="transform:scale(${scale});transform-origin:left">${esc(r)}</span>`).join(' ');
+};
+const isKurucu = u => hasRole(u, 'Kurucu');
+const kurucuCount = () => state.users.filter(u => isKurucu(u)).length;
+const isLastKurucu = u => isKurucu(u) && kurucuCount() === 1;
+
+const EMOJIS = ['🦊','🐺','🐉','🦅','🐯','🦁','🐻','🐼','🦉','🐬','⚡','🔥','🌙','⭐','🎯','🚀','💎','🛡️','👑','🎮'];
+const COLORS = ['#3b82f6','#2563eb','#60a5fa','#22d3ee','#06b6d4','#0ea5e9','#8b5cf6','#a855f7','#14b8a6','#6366f1'];
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+/* =========================================================
+   DURUM
+   ========================================================= */
+let state = { tab: 'panel', user: null, users: [], act: {}, notes: [], teamQuery: '' };
+
+function loadAll() {
+  state.users = DB.get(K.users, []);
+  state.act   = DB.get(K.act, {});
+  // Migration: tek rol → çoklu rol + stats alanı
+  let migrated = false;
+  state.users.forEach(u => {
+    if (!Array.isArray(u.roles)) {
+      u.roles = u.role ? [u.role] : ['Mod Adayı'];
+      delete u.role;
+      migrated = true;
+    }
+    if (!u.stats || typeof u.stats !== 'object') {
+      u.stats = { mute: 0, ban: 0, talep: 0 };
+      migrated = true;
+    }
+  });
+  if (migrated) DB.set(K.users, state.users);
+  const sid = DB.get(K.session, null);
+  state.user = sid ? (state.users.find(u => u.id === sid) || null) : null;
+  state.notes = state.user ? DB.get(K.notes + state.user.id, []) : [];
+}
+const saveUsers = () => DB.set(K.users, state.users);
+const saveAct   = () => DB.set(K.act, state.act);
+const saveNotes = () => { if (state.user) DB.set(K.notes + state.user.id, state.notes); };
+
+const lvl = u => u ? Math.max(0, ...rolesOf(u).map(r => ROLES[r].lvl)) : 0;
+
+// Kurucu: herkesi + kendini yönetebilir
+// Diğerleri: sadece kendinden düşük rütbeli + kendini yönetemez
+const canManage = (actor, target) => {
+  if (!actor || !target) return false;
+  if (isKurucu(actor)) return true;
+  if (actor.id === target.id) return false;
+  return lvl(actor) > lvl(target);
+};
+
+const canAssign = (actor, role) => {
+  if (!actor || !role || !ROLES[role]) return false;
+  if (isKurucu(actor)) return true;
+  return ROLES[role].lvl < lvl(actor);
+};
+const canAddMembers = (actor) => lvl(actor) >= 3;
+const actKey = (uid_, d = dstr()) => `${uid_}_${d}`;
+
+/* =========================================================
+   TOAST & MODAL
+   ========================================================= */
+function toast(msg, type = '') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  $('#toast-root').appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = '.3s'; setTimeout(() => el.remove(), 320); }, 2200);
+}
+function openModal(title, body, footer = '') {
+  $('#sheet').innerHTML = `<h2>${esc(title)}<button class="close" data-action="closeModal">✕</button></h2>
+    <div>${body}</div>${footer ? `<div style="margin-top:18px">${footer}</div>` : ''}`;
+  $('#modal-root').classList.add('open');
+}
+function closeModal() { $('#modal-root').classList.remove('open'); }
+
+/* =========================================================
+   KURULUM YÖNETİCİSİ
+   ========================================================= */
+const Install = {
+  deferred: null,
+  isStandalone: false,
+  platform: 'unknown',
+  dismissed: false,
+
+  detect() {
+    this.isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true ||
+      document.referrer.startsWith('android-app://');
+    const ua = navigator.userAgent || '';
+    if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) this.platform = 'ios';
+    else if (/Android/i.test(ua)) this.platform = 'android';
+    else this.platform = 'desktop';
+    this.dismissed = sessionStorage.getItem('yp_install_dismissed') === '1';
+  },
+
+  canPrompt() { return !!this.deferred; },
+
+  async prompt() {
+    if (!this.deferred) return false;
+    try {
+      this.deferred.prompt();
+      const { outcome } = await this.deferred.userChoice;
+      this.deferred = null;
+      return outcome === 'accepted';
+    } catch { return false; }
+  },
+
+  dismiss() {
+    this.dismissed = true;
+    sessionStorage.setItem('yp_install_dismissed', '1');
+    const b = $('#install-banner');
+    if (b) { b.style.transition = '.25s'; b.style.opacity = '0'; b.style.transform = 'translateY(30px)'; setTimeout(() => b.remove(), 260); }
+  },
+
+  showBanner() {
+    if (this.isStandalone || this.dismissed) return;
+    const showFor = this.canPrompt() || this.platform === 'ios';
+    if (!showFor || $('#install-banner')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'install-banner';
+    banner.innerHTML = `
+      <img src="./logo.png" class="ib-logo" alt=""
+           onerror="this.outerHTML='<div class=\\'ib-logo\\' style=\\'background:linear-gradient(135deg,#3b82f6,#0a4dff);display:flex;align-items:center;justify-content:center;font-size:20px\\'>👑</div>'">
+      <div class="ib-text">
+        <div class="ib-title">Uygulama olarak yükle</div>
+        <div class="ib-sub">${this.platform === 'ios' ? 'iPhone\'a ekleme rehberi' : 'Ana ekranına ekle, tam ekran kullan'}</div>
+      </div>
+      <button class="ib-btn" data-action="installApp">${this.platform === 'ios' ? 'Nasıl?' : 'Yükle'}</button>
+      <button class="ib-close" data-action="dismissInstall" aria-label="Kapat">✕</button>
+    `;
+    document.body.appendChild(banner);
+  },
+
+  async triggerInstall() {
+    if (this.canPrompt()) {
+      const ok = await this.prompt();
+      if (ok) toast('✓ Uygulama yükleniyor...', 'ok');
+      this.showBanner();
+      return;
+    }
+    if (this.platform === 'ios') { this.showIosGuide(); return; }
+    openModal('Uygulamayı Yükle', `
+      <div class="small" style="line-height:1.7;color:#c3cbe0">
+        Tarayıcın otomatik yüklemeyi desteklemiyor olabilir. Şu adımları dene:
+      </div>
+      <div class="ios-step"><div class="num">1</div>
+        <div class="txt">Tarayıcının sağ üstündeki <b>menü (⋮)</b> simgesine bas</div></div>
+      <div class="ios-step"><div class="num">2</div>
+        <div class="txt"><b>"Ana ekrana ekle"</b> veya <b>"Uygulama olarak yükle"</b> seçeneğini bul</div></div>
+      <div class="ios-step"><div class="num">3</div>
+        <div class="txt">Onayla — ana ekranında logo belirecek 👑</div></div>
+      <div class="small muted" style="text-align:center;margin-top:14px">
+        Sayfa <b>https</b> veya <b>localhost</b> üzerinden açıksa yükleme aktif olur.
+      </div>
+    `);
+  },
+
+  showIosGuide() {
+    openModal('iPhone\'a Nasıl Yüklenir?', `
+      <div style="text-align:center;margin-bottom:18px">
+        <img src="./logo.png" style="width:64px;height:64px;border-radius:16px;margin-bottom:10px;box-shadow:0 8px 24px rgba(10,77,255,.4)"
+             onerror="this.outerHTML='<div style=\\'font-size:48px\\'>👑</div>'">
+        <div class="small muted">Apple, uygulamaların otomatik yüklenmesine izin vermez.<br>Bu yüzden elle eklemen gerekir — sadece 3 adım:</div>
+      </div>
+      <div class="ios-step"><div class="num">1</div>
+        <div class="txt">Safari'nin <b>alt kısmındaki ortadaki</b> 
+          <svg class="ios-share-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 16V4"/><path d="m8 8 4-4 4 4"/><path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7"/>
+          </svg>
+          <b>Paylaş</b> simgesine bas</div></div>
+      <div class="ios-step"><div class="num">2</div>
+        <div class="txt">Açılan listeden <b>"Ana Ekrana Ekle"</b> seçeneğine bas</div></div>
+      <div class="ios-step"><div class="num">3</div>
+        <div class="txt">Sağ üstteki <b>"Ekle"</b> butonuna dokun — logo ana ekranda! 👑</div></div>
+      <div class="small muted" style="text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        ⚠️ Bunu <b>Safari</b> ile açmalısın. Chrome/Firefox iPhone'da PWA yükleyemez.
+      </div>
+    `);
+  }
+};
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  Install.deferred = e;
+  Install.showBanner();
+});
+window.addEventListener('appinstalled', () => {
+  Install.deferred = null;
+  Install.isStandalone = true;
+  const b = $('#install-banner'); if (b) b.remove();
+  toast('👑 Uygulama başarıyla yüklendi!', 'gold');
+  if (state.user && state.tab === 'profile') render();
+});
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+let authTab = 'login';
+function renderAuth() {
+  $('#main-screen').classList.add('hidden');
+  $('#auth-screen').classList.remove('hidden');
+  $('#tab-login').classList.toggle('on', authTab === 'login');
+  $('#tab-register').classList.toggle('on', authTab === 'register');
+  $('#form-login').classList.toggle('hidden', authTab !== 'login');
+  $('#form-register').classList.toggle('hidden', authTab !== 'register');
+}
+
+function doRegister() {
+  const username = $('#rg-user').value.trim();
+  const pass = $('#rg-pass').value, pass2 = $('#rg-pass2').value;
+  if (username.length < 3) return toast('Kullanıcı adı en az 3 karakter olmalı', 'err');
+  if (!/^[a-zA-Z0-9._çğıöşüÇĞİÖŞÜ]+$/.test(username)) return toast('Sadece harf, rakam, . _ kullan', 'err');
+  if (pass.length < 4) return toast('Şifre en az 4 karakter olmalı', 'err');
+  if (pass !== pass2) return toast('Şifreler eşleşmiyor', 'err');
+  if (state.users.some(u => u.username.toLowerCase() === username.toLowerCase())) return toast('Bu kullanıcı adı alınmış', 'err');
+
+  const isFirst = state.users.length === 0;
+  const u = {
+    id: uid(), username, pass: hash(pass),
+    roles: [isFirst ? 'Kurucu' : 'Mod Adayı'],
+    emoji: pick(EMOJIS), color: pick(COLORS),
+    bio: '', createdAt: Date.now(),
+    stats: { mute: 0, ban: 0, talep: 0 }
+  };
+  state.users.push(u); saveUsers();
+  state.user = u; DB.set(K.session, u.id);
+  state.notes = [];
+  toast(`Hoş geldin ${u.username}! Rolün: ${rolesOf(u).join(', ')}`, 'ok');
+  state.tab = 'panel'; render();
+}
+
+function doLogin() {
+  const username = $('#li-user').value.trim();
+  const pass = $('#li-pass').value;
+  const u = state.users.find(x => x.username.toLowerCase() === username.toLowerCase());
+  if (!u) return toast('Kullanıcı bulunamadı', 'err');
+  if (u.pass !== hash(pass)) return toast('Şifre hatalı', 'err');
+  state.user = u; DB.set(K.session, u.id);
+  state.notes = DB.get(K.notes + u.id, []);
+  toast(`Tekrar hoş geldin, ${u.username}!`, 'ok');
+  state.tab = 'panel'; render();
+}
+
+function logout() {
+  if (!confirm('Çıkış yapmak istediğine emin misin?')) return;
+  state.user = null; DB.set(K.session, null);
+  render();
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function render() {
+  if (!state.user) { renderAuth(); return; }
+  $('#auth-screen').classList.add('hidden');
+  $('#main-screen').classList.remove('hidden');
+  $('#hdr-avatar').textContent = state.user.emoji;
+  $('#hdr-avatar').style.background = state.user.color + '33';
+  $('#hdr-avatar').style.borderColor = state.user.color + '66';
+  renderNav();
+  const v = $('#view');
+  if (state.tab === 'panel')   v.innerHTML = viewPanel();
+  if (state.tab === 'team')    v.innerHTML = viewTeam();
+  if (state.tab === 'notes')   v.innerHTML = viewNotes();
+  if (state.tab === 'profile') v.innerHTML = viewProfile();
+  if (state.tab === 'admin')   v.innerHTML = viewAdmin();
+  window.scrollTo({ top: 0 });
+}
+
+const ICONS = {
+  panel:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>',
+  team:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  notes:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>',
+  profile:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>',
+  admin:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2 4 6v6c0 5 3.4 9.3 8 10 4.6-.7 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/></svg>'
+};
+
+function renderNav() {
+  const items = [
+    ['panel','Panel',ICONS.panel], ['team','Ekip',ICONS.team],
+    ['notes','Notlar',ICONS.notes], ['profile','Profil',ICONS.profile]
+  ];
+  if (lvl(state.user) >= 3) items.push(['admin','Yönetim',ICONS.admin]);
+  $('#nav').innerHTML = items.map(([k, label, ic]) =>
+    `<button data-action="tab" data-t="${k}" class="${state.tab === k ? 'on' : ''}">${ic}<span>${label}</span></button>`
+  ).join('');
+}
+
+/* =========================================================
+   PANEL
+   ========================================================= */
+function viewPanel() {
+  const u = state.user;
+  const today = dstr();
+  const myAct = state.act[actKey(u.id, today)] || {};
+  const monthPrefix = today.slice(0, 7);
+
+  let activeDays = 0;
+  for (const k in state.act) {
+    if (k.startsWith(u.id + '_') && k.slice(-7) === monthPrefix && state.act[k].status === 'Aktif') activeDays++;
+  }
+  let streak = 0;
+  for (let i = 0; i < 400; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const a = state.act[actKey(u.id, dstr(d))];
+    if (a && a.status === 'Aktif') streak++;
+    else if (i > 0 || !a) break;
+  }
+
+  const todayList = state.users.map(x => {
+    const a = state.act[actKey(x.id, today)];
+    return { ...x, status: a ? a.status : null, note: a ? a.note : '' };
+  }).sort((a, b) => lvl(b) - lvl(a));
+
+  const aktifSayi = todayList.filter(x => x.status === 'Aktif').length;
+
+  return `
+  <div class="card" style="background:linear-gradient(135deg,${u.color}22,#0c1c31);border-color:${u.color}55">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="avatar" style="width:54px;height:54px;font-size:26px;background:${u.color}33;border-color:${u.color}66">${u.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:18px;font-weight:800;letter-spacing:-.3px">${esc(u.username)}</div>
+        <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">${rolesBadges(u)}</div>
+      </div>
+    </div>
+    ${u.bio ? `<div class="small muted" style="margin-top:11px;border-top:1px solid var(--border);padding-top:10px">${esc(u.bio)}</div>` : ''}
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>BUGÜNÜN DURUMUN</h3>
+    <div class="act-row">
+      ${['Aktif','İzinli','Pasif'].map(s =>
+        `<button class="act-btn ${myAct.status === s ? 'on' : ''}" data-s="${s}" data-action="setAct" data-status="${s}">${s}</button>`
+      ).join('')}
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <textarea id="act-note" placeholder="Bugün ne yaptın? (kısa not)" style="min-height:62px">${esc(myAct.note || '')}</textarea>
+    </div>
+    <button class="btn sm" style="width:100%" data-action="saveActNote">Notu Kaydet</button>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>İSTATİSTİKLERİN</h3>
+    <div class="stat-grid">
+      <div class="stat"><b style="color:var(--green)">${activeDays}</b><span>BU AY AKTİF</span></div>
+      <div class="stat"><b style="color:var(--yellow)">${streak}</b><span>GÜN SERİ</span></div>
+      <div class="stat"><b style="color:var(--cyan)">${state.notes.length}</b><span>NOT</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>EKİP DURUMU <span class="muted small" style="margin-left:auto;font-weight:500">${aktifSayi}/${state.users.length} aktif</span></h3>
+    ${todayList.slice(0, 6).map(x => `
+      <div class="list-item" data-action="openUser" data-id="${x.id}">
+        <div class="avatar" style="background:${x.color}33;border-color:${x.color}66;width:34px;height:34px;font-size:16px;border-radius:10px">${x.emoji}</div>
+        <div class="info">
+          <div class="name">${esc(x.username)} ${rolesBadges(x, {scale: .88})}</div>
+          <div class="sub">${x.note ? esc(x.note) : '<i>not yok</i>'}</div>
+        </div>
+        <div class="dot-status ${x.status ? 's-' + x.status : 's-yok'}"></div>
+      </div>`).join('')}
+  </div>`;
+}
+
+/* =========================================================
+   EKİP
+   ========================================================= */
+function viewTeam() {
+  const q = state.teamQuery.toLowerCase();
+  const today = dstr();
+  const list = state.users
+    .filter(u => {
+      if (!q) return true;
+      const rolesStr = rolesOf(u).join(' ').toLowerCase();
+      return u.username.toLowerCase().includes(q) || rolesStr.includes(q);
+    })
+    .sort((a, b) => lvl(b) - lvl(a) || a.username.localeCompare(b.username));
+
+  const grouped = {};
+  list.forEach(u => {
+    const pr = primaryRole(u);
+    (grouped[pr] = grouped[pr] || []).push(u);
+  });
+
+  const roleDotColor = {
+    'Kurucu':    'var(--gold)',
+    'Developer': 'var(--cyan)',
+    'Admin':     'var(--red)',
+    'Mod':       'var(--green)',
+    'Mod Adayı': 'var(--blue)'
+  };
+
+  return `
+  <div class="card" style="padding:12px">
+    <div class="field" style="margin:0">
+      <input id="team-search" placeholder="🔍  İsim veya rol ara..." value="${esc(state.teamQuery)}">
+    </div>
+  </div>
+  ${canAddMembers(state.user) ? `
+  <button class="btn success" style="margin-bottom:14px" data-action="openAddMember">➕  Ekibe Yeni Üye Ekle</button>` : ''}
+  ${list.length === 0 ? '<div class="empty">Sonuç bulunamadı 🕵️</div>' : ''}
+  ${ROLE_NAMES.filter(r => grouped[r]).map(role => `
+    <div class="card">
+      <h3>
+        <span class="dot" style="background:${roleDotColor[role]}"></span>
+        <span style="display:inline-flex;align-items:center;gap:6px">
+          <span class="badge ${ROLES[role].cls}">${esc(role)}</span>
+          <span class="small muted" style="font-weight:500">(ana rol)</span>
+        </span>
+        <span class="muted small" style="margin-left:auto;font-weight:500">${grouped[role].length} kişi</span>
+      </h3>
+      ${grouped[role].map(u => {
+        const a = state.act[actKey(u.id, today)];
+        const extraCount = rolesOf(u).length - 1;
+        return `
+        <div class="list-item" data-action="openUser" data-id="${u.id}">
+          <div class="avatar" style="background:${u.color}33;border-color:${u.color}66;width:38px;height:38px;font-size:18px;border-radius:11px">${u.emoji}</div>
+          <div class="info">
+            <div class="name">${esc(u.username)} ${extraCount > 0 ? `<span class="small muted" style="font-weight:500">+${extraCount} ekstra rol</span>` : ''}</div>
+            <div class="sub">${a ? esc(a.status) + (a.note ? ' • ' + esc(a.note) : '') : 'Bugün durum girilmedi'}</div>
+          </div>
+          <div class="dot-status ${a ? 's-' + a.status : 's-yok'}"></div>
+        </div>`;
+      }).join('')}
+    </div>`).join('')}`;
+}
+
+/* =========================================================
+   NOTLAR
+   ========================================================= */
+function viewNotes() {
+  const notes = [...state.notes].sort((a, b) => b.updatedAt - a.updatedAt);
+  return `
+  <div class="card">
+    <h3><span class="dot"></span>YENİ NOT</h3>
+    <div class="field"><input id="n-title" placeholder="Başlık"></div>
+    <div class="field"><textarea id="n-body" placeholder="İçerik..."></textarea></div>
+    <button class="btn" data-action="addNote">+ Not Ekle</button>
+  </div>
+  <div class="card">
+    <h3><span class="dot"></span>NOTLARIM <span class="muted small" style="margin-left:auto;font-weight:500">${notes.length} adet</span></h3>
+    ${notes.length === 0 ? '<div class="empty">Henüz notun yok 📝</div>' : ''}
+    ${notes.map(n => `
+      <div class="note">
+        <h4>${esc(n.title)}</h4>
+        <p>${esc(n.body)}</p>
+        <div class="meta">
+          <span>${prettyDate(n.updatedAt)}</span>
+          <span style="display:flex;gap:6px">
+            <button class="btn ghost sm" data-action="editNote" data-id="${n.id}">Düzenle</button>
+            <button class="btn danger sm" data-action="delNote" data-id="${n.id}">Sil</button>
+          </span>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+/* =========================================================
+   PROFİL
+   ========================================================= */
+function viewProfile() {
+  const u = state.user;
+  const today = dstr();
+
+  let heat = '';
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = dstr(d);
+    const a = state.act[actKey(u.id, ds)];
+    const cls = a ? (a.status === 'Aktif' ? 'h1' : a.status === 'İzinli' ? 'h2' : 'h3') : '';
+    heat += `<div class="${cls} ${ds === today ? 'today' : ''}" title="${ds}${a ? ' • ' + a.status : ''}"></div>`;
+  }
+
+  let installCard = '';
+  if (Install.isStandalone) {
+    installCard = `
+      <div style="text-align:center;padding:10px 6px">
+        <div style="font-size:40px;line-height:1;margin-bottom:8px">✅</div>
+        <div style="font-weight:800;font-size:15px;color:#86efac">Uygulama Yüklü</div>
+        <div class="small muted" style="margin-top:4px">Ana ekranından uygulama olarak açılıyorsun</div>
+      </div>`;
+  } else if (Install.canPrompt()) {
+    installCard = `
+      <button class="btn gold" data-action="installApp">📲  Uygulamayı Yükle</button>
+      <div class="small muted" style="text-align:center;margin-top:10px;line-height:1.6">
+        Tek tıkla yükle — ana ekranında logo belirir 👑
+      </div>`;
+  } else if (Install.platform === 'ios') {
+    installCard = `
+      <button class="btn gold" data-action="installApp">📲  iPhone\'a Nasıl Yüklenir?</button>
+      <div class="small muted" style="text-align:center;margin-top:10px;line-height:1.6">
+        Apple otomatik yüklemeye izin vermez.<br>Safari'de <b>Paylaş → Ana Ekrana Ekle</b> adımlarını göstereyim.
+      </div>`;
+  } else {
+    installCard = `
+      <button class="btn ghost" data-action="installApp">📲  Yükleme Talimatlarını Gör</button>
+      <div class="small muted" style="text-align:center;margin-top:10px;line-height:1.6">
+        Tarayıcı menüsünden <b>Ana Ekrana Ekle</b>'yi seçerek yükleyebilirsin
+      </div>`;
+  }
+
+  return `
+  <div class="card" style="text-align:center">
+    <div class="avatar" style="width:78px;height:78px;font-size:38px;margin:0 auto 12px;border-radius:24px;background:${u.color}33;border-color:${u.color}66">${u.emoji}</div>
+    <div style="font-size:20px;font-weight:800">${esc(u.username)}</div>
+    <div style="margin-top:7px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center">${rolesBadges(u)}</div>
+    <div class="small muted" style="margin-top:8px">Katılım: ${prettyDate(u.createdAt)}</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>UYGULAMA</h3>
+    ${installCard}
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>PROFİLİ DÜZENLE</h3>
+    <div class="field"><label>KULLANICI ADI</label><input id="p-user" value="${esc(u.username)}"></div>
+    <div class="field"><label>HAKKINDA</label><textarea id="p-bio" placeholder="Kısa bir açıklama...">${esc(u.bio)}</textarea></div>
+    <div class="field"><label>AVATAR</label>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:2px">
+        ${EMOJIS.map(e => `<button data-action="setEmoji" data-e="${e}" style="width:40px;height:40px;font-size:19px;border-radius:11px;cursor:pointer;
+          background:${u.emoji === e ? 'var(--accent)' : 'var(--card2)'};border:1px solid ${u.emoji === e ? 'var(--cyan)' : 'var(--border)'}">${e}</button>`).join('')}
+      </div>
+    </div>
+    <div class="field"><label>RENK</label>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:2px">
+        ${COLORS.map(c => `<button data-action="setColor" data-c="${c}" style="width:40px;height:40px;border-radius:11px;cursor:pointer;background:${c};
+          border:3px solid ${u.color === c ? '#fff' : 'transparent'}"></button>`).join('')}
+      </div>
+    </div>
+    <button class="btn" data-action="saveProfile">Kaydet</button>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>SON 30 GÜN</h3>
+    <div class="heat">${heat}</div>
+    <div class="small muted" style="margin-top:11px;display:flex;gap:14px;flex-wrap:wrap">
+      <span>🟩 Aktif</span><span>🟨 İzinli</span><span>⬛ Pasif</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>GÜVENLİK</h3>
+    <div class="field"><label>MEVCUT ŞİFRE</label><input id="pw-old" type="password" placeholder="••••••"></div>
+    <div class="field"><label>YENİ ŞİFRE</label><input id="pw-new" type="password" placeholder="••••••"></div>
+    <button class="btn ghost" data-action="changePass">Şifreyi Değiştir</button>
+  </div>
+
+  <div class="card">
+    <button class="btn danger" data-action="logout">Çıkış Yap</button>
+  </div>`;
+}
+
+/* =========================================================
+   YÖNETİM
+   ========================================================= */
+function viewAdmin() {
+  if (lvl(state.user) < 3) return '<div class="empty">Bu sayfaya erişim yetkin yok 🔒</div>';
+  const today = dstr();
+  const rows = [...state.users].sort((a, b) => lvl(b) - lvl(a) || a.username.localeCompare(b.username));
+
+  const aktif = rows.filter(u => (state.act[actKey(u.id, today)] || {}).status === 'Aktif').length;
+  const izinli = rows.filter(u => (state.act[actKey(u.id, today)] || {}).status === 'İzinli').length;
+
+  return `
+  <div class="card">
+    <h3><span class="dot"></span>BUGÜNÜN ÖZETİ</h3>
+    <div class="stat-grid">
+      <div class="stat"><b style="color:var(--green)">${aktif}</b><span>AKTİF</span></div>
+      <div class="stat"><b style="color:var(--yellow)">${izinli}</b><span>İZİNLİ</span></div>
+      <div class="stat"><b>${rows.length - aktif - izinli}</b><span>DİĞER</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>ÜYE YÖNETİMİ <span class="muted small" style="margin-left:auto;font-weight:500">${rows.length} kişi</span></h3>
+    <button class="btn success" style="margin-bottom:14px" data-action="openAddMember">➕  Yeni Üye Ekle</button>
+    ${rows.map(u => {
+      const a = state.act[actKey(u.id, today)];
+      const manage = canManage(state.user, u);
+      const isMe = u.id === state.user.id;
+      return `
+      <div class="list-item" style="cursor:default">
+        <div class="avatar" style="background:${u.color}33;border-color:${u.color}66;width:36px;height:36px;font-size:17px;border-radius:11px">${u.emoji}</div>
+        <div class="info">
+          <div class="name">${esc(u.username)} ${isMe ? '<span class="small muted">(sen)</span>' : ''} ${rolesBadges(u, {scale: .85})}</div>
+          <div class="sub">${a ? esc(a.status) + ' • ' + prettyDate(a.updatedAt) : 'durum yok'}</div>
+        </div>
+        ${manage ? `<button class="btn ghost sm" data-action="openRole" data-id="${u.id}">Rol</button>` : '<span class="dot-status s-yok"></span>'}
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>VERİ YÖNETİMİ</h3>
+    <p class="small muted" style="margin-top:0">Verileri dosyaya yedekleyip başka cihaza taşıyabilirsin.</p>
+    <div class="row" style="margin-top:12px">
+      <button class="btn ghost" data-action="exportData">⬇ Yedek Al</button>
+      <button class="btn ghost" data-action="importData">⬆ Geri Yükle</button>
+    </div>
+    <input type="file" id="import-file" accept=".json" class="hidden">
+    <button class="btn danger" style="margin-top:10px" data-action="wipe">🗑 Tüm Verileri Sil</button>
+  </div>`;
+}
+
+/* =========================================================
+   YENİ ÜYE EKLE
+   ========================================================= */
+function genPassword(len = 10) {
+  const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789!@#';
+  let p = '';
+  for (let i = 0; i < len; i++) p += chars[Math.floor(Math.random() * chars.length)];
+  return p;
+}
+
+function openAddMemberModal() {
+  if (!canAddMembers(state.user)) return toast('Yetkin yok', 'err');
+  const assignable = ROLE_NAMES.filter(r => canAssign(state.user, r));
+
+  openModal('Yeni Üye Ekle', `
+    <div style="background:var(--card);padding:11px;border-radius:11px;margin-bottom:14px;font-size:12.5px;color:var(--muted);border:1px solid var(--border)">
+      Bu ekrandan eklediğin üye <b style="color:var(--text)">anında</b> hesap sahibi olur. Şifreyi kendisine iletmeyi unutma.
+    </div>
+    <div class="field"><label>KULLANICI ADI</label><input id="am-user" placeholder="kullaniciadi" autocomplete="off"></div>
+    <div class="field">
+      <label>ŞİFRE</label>
+      <div style="display:flex;gap:8px">
+        <input id="am-pass" placeholder="en az 4 karakter" autocomplete="off" style="flex:1">
+        <button type="button" class="btn ghost sm" style="width:auto;padding:0 14px" data-action="genPass">🎲</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>ROLLER (birden fazla seçebilirsin)</label>
+      <div id="am-roles" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${assignable.map((r, i) => `
+          <button type="button" class="btn ghost sm am-role-btn"
+            data-action="toggleNewRole" data-role="${r}"
+            style="width:100%;${i === 0 ? 'background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:1px solid transparent' : ''}"
+          >${esc(r)}</button>
+        `).join('')}
+      </div>
+    </div>
+    <div class="field"><label>HAKKINDA (opsiyonel)</label>
+      <textarea id="am-bio" placeholder="Kısa bir açıklama..." style="min-height:60px"></textarea>
+    </div>
+    <button class="btn success" data-action="addMember">✓  Üyeyi Oluştur</button>
+  `);
+}
+
+function doAddMember() {
+  const username = $('#am-user').value.trim();
+  const pass = $('#am-pass').value;
+  const bio = $('#am-bio').value.trim();
+  const selectedRoles = $$('#am-roles .am-role-btn')
+    .filter(b => b.style.background.includes('gradient'))
+    .map(b => b.dataset.role);
+
+  if (!canAddMembers(state.user)) return toast('Yetkin yok', 'err');
+  if (username.length < 3) return toast('Kullanıcı adı en az 3 karakter olmalı', 'err');
+  if (!/^[a-zA-Z0-9._çğıöşüÇĞİÖŞÜ]+$/.test(username)) return toast('Sadece harf, rakam, . _ kullan', 'err');
+  if (pass.length < 4) return toast('Şifre en az 4 karakter olmalı', 'err');
+  if (!selectedRoles.length) return toast('En az bir rol seç', 'err');
+  if (state.users.some(u => u.username.toLowerCase() === username.toLowerCase()))
+    return toast('Bu kullanıcı adı alınmış', 'err');
+  const bad = selectedRoles.find(r => !canAssign(state.user, r));
+  if (bad) return toast(`${bad} rolünü atayamazsın`, 'err');
+
+  const u = {
+    id: uid(), username, pass: hash(pass),
+    roles: selectedRoles,
+    emoji: pick(EMOJIS), color: pick(COLORS), bio,
+    createdAt: Date.now(), addedBy: state.user.username,
+    stats: { mute: 0, ban: 0, talep: 0 }
+  };
+  state.users.push(u);
+  saveUsers(); closeModal(); render();
+  toast(`✓ ${username} ekibe eklendi (${selectedRoles.join(', ')})`, 'ok');
+}
+
+/* =========================================================
+   KULLANICI DETAY MODALI
+   ========================================================= */
+function openUserModal(id) {
+  const u = state.users.find(x => x.id === id);
+  if (!u) return;
+  const today = dstr();
+  const a = state.act[actKey(u.id, today)];
+  const manage = canManage(state.user, u);
+  const isSelf = u.id === state.user.id;
+  const userRoles = rolesOf(u);
+
+  let heat = '';
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = dstr(d);
+    const x = state.act[actKey(u.id, ds)];
+    const cls = x ? (x.status === 'Aktif' ? 'h1' : x.status === 'İzinli' ? 'h2' : 'h3') : '';
+    heat += `<div class="${cls} ${ds === today ? 'today' : ''}"></div>`;
+  }
+
+  // --- İşlem istatistikleri ---
+  const statLabels = { mute: '🔇 MUTE', ban: '⛔ BAN', talep: '🎫 TALEP' };
+  const statsHTML = Object.keys(statLabels).map(k => {
+    const val = (u.stats && u.stats[k]) || 0;
+    return `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 6px;text-align:center">
+        <div class="small muted" style="font-size:10px;letter-spacing:.5px;font-weight:700">${statLabels[k]}</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px">
+          ${manage ? `<button data-action="statMinus" data-id="${u.id}" data-stat="${k}"
+            style="width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-weight:800;cursor:pointer;font-size:15px;line-height:1">−</button>` : ''}
+          <div style="font-size:20px;font-weight:800;min-width:32px">${val}</div>
+          ${manage ? `<button data-action="statPlus" data-id="${u.id}" data-stat="${k}"
+            style="width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-weight:800;cursor:pointer;font-size:15px;line-height:1">+</button>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  // --- Rol seçici (çoklu) ---
+  const rolePicker = ROLE_NAMES.map(r => {
+    const ok = canAssign(state.user, r);
+    const has = userRoles.includes(r);
+    const lastK = (r === 'Kurucu' && has && isLastKurucu(u));
+    const disabled = !ok || lastK;
+    return `
+      <button class="btn ${has ? '' : 'ghost'} sm" style="width:100%;${disabled ? 'opacity:.35;pointer-events:none' : ''}"
+        data-action="toggleRole" data-id="${u.id}" data-role="${r}">
+        ${has ? '✓ ' : '+ '}${esc(r)}
+      </button>`;
+  }).join('');
+
+  openModal(u.username, `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+      <div class="avatar" style="width:58px;height:58px;font-size:28px;border-radius:18px;background:${u.color}33;border-color:${u.color}66">${u.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800;font-size:17px">${esc(u.username)} ${isSelf ? '<span class="small muted" style="font-weight:500">(sen)</span>' : ''}</div>
+        <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">${rolesBadges(u)}</div>
+      </div>
+    </div>
+
+    ${u.bio ? `<div class="small" style="background:var(--card);padding:11px;border-radius:11px;margin-bottom:14px;border:1px solid var(--border)">${esc(u.bio)}</div>` : ''}
+    ${u.addedBy ? `<div class="small muted" style="margin-bottom:10px">Ekleyen: <b style="color:var(--text)">${esc(u.addedBy)}</b></div>` : ''}
+
+    <div class="small muted" style="margin-bottom:6px">BUGÜNKÜ DURUM</div>
+    <div style="display:flex;align-items:center;gap:9px;background:var(--card);padding:12px;border-radius:12px;margin-bottom:14px;border:1px solid var(--border)">
+      <div class="dot-status ${a ? 's-' + a.status : 's-yok'}"></div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13.5px">${a ? esc(a.status) : 'Girilmedi'}</div>
+        ${a && a.note ? `<div class="small muted">${esc(a.note)}</div>` : ''}
+      </div>
+    </div>
+
+    <div class="small muted" style="margin-bottom:6px">SON 30 GÜN</div>
+    <div class="heat" style="margin-bottom:18px">${heat}</div>
+
+    <div class="small muted" style="margin-bottom:8px">İŞLEM İSTATİSTİKLERİ</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px">
+      ${statsHTML}
+    </div>
+
+    ${manage ? `
+      <div class="small muted" style="margin-bottom:8px">
+        ROLLER ${isSelf ? '<span style="color:var(--gold);font-weight:600">• kendi rollerini düzenliyorsun</span>' : ''}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${rolePicker}
+      </div>
+      ${isLastKurucu(u) ? `<div class="small" style="margin-top:10px;padding:10px 12px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:10px;color:#fcd34d;font-size:12px;line-height:1.5">
+        ⚠️ Sistemdeki <b>son Kurucu</b> — Kurucu rolünü kaldıramazsın (yoksa kilitlenirsin).<br>
+        Önce başka birine Kurucu ver, sonra kendi rolünü kaldır.
+      </div>` : ''}
+      ${isKurucu(state.user) && u.id !== state.user.id ? `
+        <button class="btn danger" style="margin-top:14px" data-action="delUser" data-id="${u.id}">Kullanıcıyı Sil</button>` : ''}
+    ` : `<div class="small muted" style="text-align:center;padding:10px">Bu kullanıcıyı düzenleme yetkin yok.</div>`}
+  `);
+}
+
+/* =========================================================
+   OLAYLAR
+   ========================================================= */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const a = el.dataset.action;
+
+  if (a === 'authTab') { authTab = el.dataset.t; renderAuth(); }
+  if (a === 'login')    doLogin();
+  if (a === 'register') doRegister();
+
+  if (a === 'tab') { state.tab = el.dataset.t; closeModal(); render(); }
+  if (a === 'closeModal') closeModal();
+  if (a === 'logout') logout();
+
+  if (a === 'installApp')     Install.triggerInstall();
+  if (a === 'dismissInstall') Install.dismiss();
+
+  if (a === 'setAct') {
+    const today = dstr();
+    const k = actKey(state.user.id, today);
+    const cur = state.act[k] || {};
+    if (cur.status === el.dataset.status) { delete state.act[k]; }
+    else state.act[k] = { status: el.dataset.status, note: cur.note || '', updatedAt: Date.now() };
+    saveAct(); render();
+    toast('Durum güncellendi', 'ok');
+  }
+  if (a === 'saveActNote') {
+    const noteEl = $('#act-note'); if (!noteEl) return;
+    const today = dstr();
+    const k = actKey(state.user.id, today);
+    const cur = state.act[k] || { status: 'Aktif' };
+    state.act[k] = { status: cur.status, note: noteEl.value.trim(), updatedAt: Date.now() };
+    saveAct(); render();
+    toast('Not kaydedildi', 'ok');
+  }
+
+  if (a === 'addNote') {
+    const t = $('#n-title').value.trim(), b = $('#n-body').value.trim();
+    if (!t && !b) return toast('Boş not eklenemez', 'err');
+    state.notes.push({ id: uid(), title: t || 'Başlıksız', body: b, updatedAt: Date.now() });
+    saveNotes(); render();
+    toast('Not eklendi', 'ok');
+  }
+  if (a === 'delNote') {
+    if (!confirm('Bu not silinsin mi?')) return;
+    state.notes = state.notes.filter(n => n.id !== el.dataset.id);
+    saveNotes(); render();
+    toast('Not silindi', 'ok');
+  }
+  if (a === 'editNote') {
+    const n = state.notes.find(x => x.id === el.dataset.id);
+    if (!n) return;
+    openModal('Notu Düzenle', `
+      <div class="field"><label>BAŞLIK</label><input id="e-title" value="${esc(n.title)}"></div>
+      <div class="field"><label>İÇERİK</label><textarea id="e-body" style="min-height:150px">${esc(n.body)}</textarea></div>
+      <button class="btn" data-action="saveNote" data-id="${n.id}">Kaydet</button>`);
+  }
+  if (a === 'saveNote') {
+    const n = state.notes.find(x => x.id === el.dataset.id);
+    if (!n) return;
+    n.title = $('#e-title').value.trim() || 'Başlıksız';
+    n.body = $('#e-body').value;
+    n.updatedAt = Date.now();
+    saveNotes(); closeModal(); render();
+    toast('Not güncellendi', 'ok');
+  }
+
+  if (a === 'setEmoji') { state.user.emoji = el.dataset.e; saveUsers(); render(); }
+  if (a === 'setColor') { state.user.color = el.dataset.c; saveUsers(); render(); }
+  if (a === 'saveProfile') {
+    const nu = $('#p-user').value.trim();
+    if (nu.length < 3) return toast('Kullanıcı adı en az 3 karakter', 'err');
+    if (state.users.some(x => x.id !== state.user.id && x.username.toLowerCase() === nu.toLowerCase()))
+      return toast('Bu kullanıcı adı alınmış', 'err');
+    state.user.username = nu;
+    state.user.bio = $('#p-bio').value.trim();
+    saveUsers(); render();
+    toast('Profil kaydedildi', 'ok');
+  }
+  if (a === 'changePass') {
+    const o = $('#pw-old').value, n = $('#pw-new').value;
+    if (hash(o) !== state.user.pass) return toast('Mevcut şifre hatalı', 'err');
+    if (n.length < 4) return toast('Yeni şifre en az 4 karakter', 'err');
+    state.user.pass = hash(n); saveUsers();
+    $('#pw-old').value = ''; $('#pw-new').value = '';
+    toast('Şifre değiştirildi', 'ok');
+  }
+
+  if (a === 'openUser') openUserModal(el.dataset.id);
+  if (a === 'openRole') openUserModal(el.dataset.id);
+
+  if (a === 'openAddMember') openAddMemberModal();
+  if (a === 'addMember') doAddMember();
+  if (a === 'genPass') {
+    const inp = $('#am-pass');
+    if (inp) { inp.value = genPassword(10); inp.focus(); inp.select?.(); }
+  }
+
+  if (a === 'toggleNewRole') {
+    const st = el.style.background;
+    if (st && st.includes('gradient')) {
+      el.style.background = 'var(--card2)';
+      el.style.color = 'var(--text)';
+      el.style.border = '1px solid var(--border)';
+    } else {
+      el.style.background = 'linear-gradient(135deg,var(--accent),var(--accent2))';
+      el.style.color = '#fff';
+      el.style.border = '1px solid transparent';
+    }
+  }
+
+  if (a === 'toggleRole') {
+    const u = state.users.find(x => x.id === el.dataset.id);
+    const r = el.dataset.role;
+    if (!u) return;
+    if (!canManage(state.user, u)) return toast('Yetkin yok', 'err');
+    if (!canAssign(state.user, r)) return toast('Bu rolü atayamazsın', 'err');
+    const rs = rolesOf(u);
+    const has = rs.includes(r);
+    if (has) {
+      if (r === 'Kurucu' && isLastKurucu(u)) return toast('Son Kurucu\'nun rolü kaldırılamaz', 'err');
+      if (rs.length === 1) return toast('En az bir rol gerekli', 'err');
+      u.roles = rs.filter(x => x !== r);
+      toast(`${u.username} → ${r} kaldırıldı`, 'ok');
+    } else {
+      u.roles = [...rs, r];
+      toast(`${u.username} → ${r} eklendi`, 'ok');
+    }
+    saveUsers();
+    render();
+    if ($('#modal-root').classList.contains('open')) openUserModal(u.id);
+  }
+
+  if (a === 'statPlus' || a === 'statMinus') {
+    const u = state.users.find(x => x.id === el.dataset.id);
+    const k = el.dataset.stat;
+    if (!u) return;
+    if (!canManage(state.user, u)) return toast('Yetkin yok', 'err');
+    if (!u.stats) u.stats = {};
+    if (typeof u.stats[k] !== 'number') u.stats[k] = 0;
+    if (a === 'statPlus') u.stats[k]++;
+    else u.stats[k] = Math.max(0, u.stats[k] - 1);
+    saveUsers();
+    if ($('#modal-root').classList.contains('open')) openUserModal(u.id);
+  }
+
+  if (a === 'delUser') {
+    const u = state.users.find(x => x.id === el.dataset.id);
+    if (!u || !canManage(state.user, u)) return;
+    if (!confirm(`${u.username} kalıcı olarak silinsin mi?`)) return;
+    state.users = state.users.filter(x => x.id !== u.id);
+    saveUsers(); closeModal(); render();
+    toast('Kullanıcı silindi', 'ok');
+  }
+  if (a === 'exportData') {
+    const data = { users: state.users, act: state.act, exportedAt: Date.now() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `yonetim-paneli-yedek-${dstr()}.json`;
+    link.click();
+    toast('Yedek indirildi', 'ok');
+  }
+  if (a === 'importData') $('#import-file').click();
+  if (a === 'wipe') {
+    if (!isKurucu(state.user)) return toast('Sadece Kurucu silebilir', 'err');
+    if (!confirm('TÜM veriler silinecek. Emin misin?')) return;
+    if (!confirm('Son kez soruyorum: gerçekten her şey silinsin mi?')) return;
+    localStorage.clear(); location.reload();
+  }
+});
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'team-search') {
+    state.teamQuery = e.target.value;
+    const pos = e.target.selectionStart;
+    $('#view').innerHTML = viewTeam();
+    const n = $('#team-search'); n.focus(); n.setSelectionRange(pos, pos);
+  }
+});
+
+document.addEventListener('change', e => {
+  if (e.target.id === 'import-file' && e.target.files[0]) {
+    const fr = new FileReader();
+    fr.onload = ev => {
+      try {
+        const d = JSON.parse(ev.target.result);
+        if (!d.users) throw 0;
+        if (!confirm('Mevcut veriler yedekle değiştirilecek. Devam?')) return;
+        DB.set(K.users, d.users); DB.set(K.act, d.act || {});
+        toast('Geri yüklendi, yeniden giriş yap', 'ok');
+        setTimeout(() => location.reload(), 900);
+      } catch { toast('Geçersiz yedek dosyası', 'err'); }
+    };
+    fr.readAsText(e.target.files[0]);
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (e.target.id === 'li-pass' || e.target.id === 'li-user') doLogin();
+  if (e.target.id === 'rg-pass2') doRegister();
+});
+
+/* =========================================================
+   SERVICE WORKER KAYDI
+   ========================================================= */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+      .then(reg => {
+        console.log('[SW] Kayıt başarılı:', reg.scope);
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          if (!newSW) return;
+          newSW.addEventListener('statechange', () => {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateToast(reg);
+            }
+          });
+        });
+      })
+      .catch(err => console.warn('[SW] Kayıt başarısız:', err));
+  });
+
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+}
+
+function showUpdateToast(reg) {
+  if ($('#update-toast')) return;
+  const el = document.createElement('div');
+  el.id = 'update-toast';
+  el.innerHTML = `
+    <div class="txt">🎉 Yeni sürüm hazır!</div>
+    <button>Güncelle</button>
+  `;
+  el.querySelector('button').addEventListener('click', () => {
+    if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+    el.remove();
+  });
+  document.body.appendChild(el);
+}
+
+/* =========================================================
+   BAŞLAT
+   ========================================================= */
+Install.detect();
+loadAll();
+render();
+
+setTimeout(() => { Install.detect(); Install.showBanner(); }, 1200);
+
+window.matchMedia('(display-mode: standalone)').addEventListener?.('change', e => {
+  Install.isStandalone = e.matches;
+  if (state.user && state.tab === 'profile') render();
+  if (e.matches) { const b = $('#install-banner'); if (b) b.remove(); }
+});
+</script>
+</body>
+</html>
